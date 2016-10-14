@@ -22,7 +22,17 @@
  * Portuguese, Brazilian : "PT"
  * Chinese : "ZH"
  */
-namespace etalsnart {
+namespace etranslate {
+	/**
+	 * @brief Initialize etranslate
+	 * @param[in] _argc Number of argument list
+	 * @param[in] _argv List of arguments
+	 */
+	void init(int _argc, const char** _argv);
+	/**
+	 * @brief Un-Initialize etranslate
+	 */
+	void unInit();
 	/**
 	 * @brief Set the path folder of the translation files
 	 * @param[in] _lib Library name that the path depend
@@ -68,4 +78,4 @@ namespace etalsnart {
 	std::string get(const std::string& _instance);
 };
 // Here we define a simple macro to Translate all string simply:
-#define TRANSLATE(a) etalsnart::get(a)
+#define TRANSLATE(a) etranslate::get(a)
