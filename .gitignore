@@ -27,3 +27,8 @@
 *.exe
 *.out
 *.app
+
+# python property
+*.pyc
+__pycache__
+
