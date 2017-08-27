@@ -6,18 +6,18 @@
 
 #include <etranslate/debug.hpp>
 #include <etranslate/etranslate.hpp>
-#include <map>
+#include <etk/Map.hpp>
 #include <etk/os/FSNode.hpp>
 #include <ejson/ejson.hpp>
 
 class LocalInstanceTranslation {
 	private:
-		std::map<std::string,std::string> m_listPath;
-		std::string m_major;
-		std::string m_languageDefault;
-		std::string m_language;
+		etk::Map<etk::String,etk::String> m_listPath;
+		etk::String m_major;
+		etk::String m_languageDefault;
+		etk::String m_language;
 		bool m_translateLoadad;
-		std::map<std::string,std::string> m_translate;
+		etk::Map<etk::String,etk::String> m_translate;
 	public:
 		LocalInstanceTranslation() :
 		  m_major("etranslate"),
@@ -27,7 +27,7 @@ class LocalInstanceTranslation {
 			// nothing to do ...
 		}
 	public:
-		void addPath(const std::string& _lib, const std::string& _path, bool _major) {
+		void addPath(const etk::String& _lib, const etk::String& _path, bool _major) {
 			auto it = m_listPath.find(_lib);
 			if (it == m_listPath.end()) {
 				m_listPath.insert(make_pair(_lib, _path));
@@ -42,16 +42,16 @@ class LocalInstanceTranslation {
 			m_translate.clear();
 		};
 		
-		const std::string& getPaths(const std::string& _lib) {
+		const etk::String& getPaths(const etk::String& _lib) {
 			auto it = m_listPath.find(_lib);
 			if (it == m_listPath.end()) {
-				static const std::string g_error("");
+				static const etk::String g_error("");
 				return g_error;
 			}
 			return it->second;
 		};
 		
-		void setLanguageDefault(const std::string& _lang) {
+		void setLanguageDefault(const etk::String& _lang) {
 			if (m_languageDefault == _lang) {
 				return;
 			}
@@ -61,11 +61,11 @@ class LocalInstanceTranslation {
 			m_translate.clear();
 		};
 		
-		const std::string& getLanguageDefault() {
+		const etk::String& getLanguageDefault() {
 			return m_languageDefault;
 		};
 		
-		void setLanguage(const std::string& _lang) {
+		void setLanguage(const etk::String& _lang) {
 			if (m_language == _lang) {
 				return;
 			}
@@ -97,29 +97,29 @@ class LocalInstanceTranslation {
 			}
 		};
 		
-		const std::string& getLanguage() {
+		const etk::String& getLanguage() {
 			return m_language;
 		};
 		
-		std::string get(const std::string& _instance) {
+		etk::String get(const etk::String& _instance) {
 			loadTranslation();
 			ETRANSLATE_VERBOSE("Request translate: '" << _instance << "'");
 			// find all iterance of '_T{' ... '}'
-			std::string out;
+			etk::String out;
 			auto itOld = _instance.begin();
 			size_t pos = _instance.find("_T{");
-			while (pos != std::string::npos) {
+			while (pos != etk::String::npos) {
 				out.append(itOld, _instance.begin() + pos);
 				auto it = _instance.begin() + pos + 3;
 				itOld = it;
 				pos = _instance.find("}", pos);
-				if (pos == std::string::npos) {
+				if (pos == etk::String::npos) {
 					ETRANSLATE_WARNING("missing end translation '}' in: '" << _instance << "'");
 					it = _instance.end();
 				} else {
 					it = _instance.begin() + pos;
 				}
-				std::string basicEmptyValue = std::string(itOld, it);
+				etk::String basicEmptyValue = etk::String(itOld, it);
 				auto itTranslate = m_translate.find(basicEmptyValue);
 				if (itTranslate == m_translate.end()) {
 					ETRANSLATE_DEBUG("Can not find tranlation : '" << _instance << "'");
@@ -149,17 +149,17 @@ class LocalInstanceTranslation {
 			// start parse language for Major:
 			auto itMajor = m_listPath.find(m_major);
 			if (itMajor != m_listPath.end()) {
-				std::string filename(itMajor->second + "/" + m_language + ".json");
+				etk::String filename(itMajor->second + "/" + m_language + ".json");
 				ejson::Document doc;
 				doc.load(filename);
 				for (auto element : doc.getKeys()) {
-					std::string val = doc[element].toString().get();
+					etk::String val = doc[element].toString().get();
 					m_translate.insert(make_pair(element, val));
 				}
 				filename = itMajor->second + "/" + m_languageDefault + ".json";
 				doc.load(filename);
 				for (auto element : doc.getKeys()) {
-					std::string val = doc[element].toString().get();
+					etk::String val = doc[element].toString().get();
 					auto itTrans = m_translate.find(element);
 					if (itTrans == m_translate.end()) {
 						m_translate.insert(make_pair(element, val));
@@ -171,14 +171,14 @@ class LocalInstanceTranslation {
 				if (it.first == m_major) {
 					continue;
 				}
-				std::string filename(it.second + "/" + m_languageDefault + ".json");
+				etk::String filename(it.second + "/" + m_languageDefault + ".json");
 				if (etk::FSNodeExist(filename) == false) {
 					continue;
 				}
 				ejson::Document doc;
 				doc.load(filename);
 				for (auto element : doc.getKeys()) {
-					std::string val = doc[element].toString().get();
+					etk::String val = doc[element].toString().get();
 					auto itTrans = m_translate.find(element);
 					if (itTrans == m_translate.end()) {
 						m_translate.insert(make_pair(element, val));
@@ -190,14 +190,14 @@ class LocalInstanceTranslation {
 				if (it.first == m_major) {
 					continue;
 				}
-				std::string filename(it.second + "/" + m_languageDefault + ".json");
+				etk::String filename(it.second + "/" + m_languageDefault + ".json");
 				if (etk::FSNodeExist(filename) == false) {
 					continue;
 				}
 				ejson::Document doc;
 				doc.load(filename);
 				for (auto element : doc.getKeys()) {
-					std::string val = doc[element].toString().get();
+					etk::String val = doc[element].toString().get();
 					auto itTrans = m_translate.find(element);
 					if (itTrans == m_translate.end()) {
 						m_translate.insert(make_pair(element, val));
@@ -221,7 +221,7 @@ void etranslate::init(int _argc, const char** _argv) {
 	}
 	ETRANSLATE_INFO("E-translate system init");
 	for (int32_t iii=0; iii<_argc ; ++iii) {
-		std::string data = _argv[iii];
+		etk::String data = _argv[iii];
 		if (    data == "-h"
 		     || data == "--help") {
 			ETRANSLATE_PRINT("e-translate - help : ");
@@ -246,42 +246,42 @@ void etranslate::unInit() {
 	ETRANSLATE_ERROR("E-translate system un-init (already done before)");
 }
 
-void etranslate::addPath(const std::string& _lib, const std::string& _path, bool _major) {
+void etranslate::addPath(const etk::String& _lib, const etk::String& _path, bool _major) {
 	if (g_isInit <= 0) {
 		ETRANSLATE_ERROR("E-translate system has not been init");
 	}
 	getInstanceTranslation().addPath(_lib, _path, _major);
 }
 
-const std::string& etranslate::getPaths(const std::string& _lib) {
+const etk::String& etranslate::getPaths(const etk::String& _lib) {
 	if (g_isInit <= 0) {
 		ETRANSLATE_ERROR("E-translate system has not been init");
 	}
 	return getInstanceTranslation().getPaths(_lib);
 }
 
-void etranslate::setLanguageDefault(const std::string& _lang) {
+void etranslate::setLanguageDefault(const etk::String& _lang) {
 	if (g_isInit <= 0) {
 		ETRANSLATE_ERROR("E-translate system has not been init");
 	}
 	getInstanceTranslation().setLanguageDefault(_lang);
 }
 
-const std::string& etranslate::getLanguageDefault() {
+const etk::String& etranslate::getLanguageDefault() {
 	if (g_isInit <= 0) {
 		ETRANSLATE_ERROR("E-translate system has not been init");
 	}
 	return getInstanceTranslation().getLanguageDefault();
 }
 
-void etranslate::setLanguage(const std::string& _lang) {
+void etranslate::setLanguage(const etk::String& _lang) {
 	if (g_isInit <= 0) {
 		ETRANSLATE_ERROR("E-translate system has not been init");
 	}
 	getInstanceTranslation().setLanguage(_lang);
 }
 
-const std::string& etranslate::getLanguage() {
+const etk::String& etranslate::getLanguage() {
 	if (g_isInit <= 0) {
 		ETRANSLATE_ERROR("E-translate system has not been init");
 	}
@@ -293,9 +293,9 @@ void etranslate::autoDetectLanguage() {
 		ETRANSLATE_ERROR("E-translate system has not been init");
 	}
 	ETRANSLATE_VERBOSE("Auto-detect language of system");
-	std::string nonameLocalName;
-	std::string userLocalName;
-	std::string globalLocalName;
+	etk::String nonameLocalName;
+	etk::String userLocalName;
+	etk::String globalLocalName;
 	try {
 		nonameLocalName = std::locale(std::locale(), new std::ctype<char>).name();
 		userLocalName = std::locale("").name();
@@ -309,7 +309,7 @@ void etranslate::autoDetectLanguage() {
 		userLocalName = "EN";
 		globalLocalName = "EN";
 	}
-	std::string lang = nonameLocalName;
+	etk::String lang = nonameLocalName;
 	if (    lang == "*"
 	     || lang == "") {
 		lang = userLocalName;
@@ -323,7 +323,7 @@ void etranslate::autoDetectLanguage() {
 	     || lang.size() < 2) {
 		lang = "EN";
 	}
-	lang = std::string(lang.begin(), lang.begin()+2);
+	lang = etk::String(lang.begin(), lang.begin()+2);
 	lang = etk::toupper(lang);
 	ETRANSLATE_INFO("Select Language : '" << lang << "'");
 	getInstanceTranslation().setLanguage(lang);
@@ -334,7 +334,7 @@ void etranslate::autoDetectLanguage() {
 		if (s == nullptr || strlen(s) < 2) {
 			ETRANSLATE_INFO("Try to determine system language FAIL ...");
 		} else {
-			std::string lang;
+			etk::String lang;
 			lang += s[0];
 			lang += s[1];
 			lang = etk::toupper(lang);
@@ -346,7 +346,7 @@ void etranslate::autoDetectLanguage() {
 	#endif
 }
 
-std::string etranslate::get(const std::string& _instance) {
+etk::String etranslate::get(const etk::String& _instance) {
 	return getInstanceTranslation().get(_instance);
 }
 

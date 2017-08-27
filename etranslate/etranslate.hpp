@@ -39,33 +39,33 @@ namespace etranslate {
 	 * @param[in] _path ETK generic path (DATA:... or /xxx)
 	 * @param[in] _major This path is the major path (The last loaded, the one which overload all)
 	 */
-	void addPath(const std::string& _lib, const std::string& _path, bool _major = false);
+	void addPath(const etk::String& _lib, const etk::String& _path, bool _major = false);
 	/**
 	 * @brief Get the current paths of the library
 	 * @param[in] _lib Library name that the path depend
 	 * @return Path name.
 	 */
-	const std::string& getPaths(const std::string& _lib);
+	const etk::String& getPaths(const etk::String& _lib);
 	/**
 	 * @brief Set the default language to load data (the default language might contain all internal data for the basic application)
 	 * @param[in] _lang Language to load : ("EN" for english, "FR" for french, "DE" for German, "SP" for spanish ...)
 	 */
-	void setLanguageDefault(const std::string& _lang);
+	void setLanguageDefault(const etk::String& _lang);
 	/**
 	 * @brief Get the current language selected
 	 * @return The 2/3 char defining the language
 	 */
-	const std::string& getLanguageDefault();
+	const etk::String& getLanguageDefault();
 	/**
 	 * @brief Set the language to load data. when no data availlable, we get the default language.
 	 * @param[in] _lang Language to load : ("EN" for english, "FR" for french, "DE" for German, "SP" for spanish ...)
 	 */
-	void setLanguage(const std::string& _lang);
+	void setLanguage(const etk::String& _lang);
 	/**
 	 * @brief Get the current language loaded
 	 * @return The 2/3 char defining the language
 	 */
-	const std::string& getLanguage();
+	const etk::String& getLanguage();
 	/**
 	 * @brief Automatic detection of the system language
 	 */
@@ -75,7 +75,7 @@ namespace etranslate {
 	 * @param[in] _instance Text to translate.
 	 * @return The tranlated text.
 	 */
-	std::string get(const std::string& _instance);
+	etk::String get(const etk::String& _instance);
 };
 // Here we define a simple macro to Translate all string simply:
 #define TRANSLATE(a) etranslate::get(a)
