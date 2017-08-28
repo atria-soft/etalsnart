@@ -9,6 +9,8 @@
 #include <etk/Map.hpp>
 #include <etk/os/FSNode.hpp>
 #include <ejson/ejson.hpp>
+#include <locale.h>
+
 
 class LocalInstanceTranslation {
 	private:
@@ -28,12 +30,7 @@ class LocalInstanceTranslation {
 		}
 	public:
 		void addPath(const etk::String& _lib, const etk::String& _path, bool _major) {
-			auto it = m_listPath.find(_lib);
-			if (it == m_listPath.end()) {
-				m_listPath.insert(make_pair(_lib, _path));
-			} else {
-				it->second = _path;
-			}
+			m_listPath.set(_lib, _path);
 			if (_major == true) {
 				m_major = _lib;
 				ETRANSLATE_INFO("Change major translation : '" << m_major << "'");
@@ -154,16 +151,13 @@ class LocalInstanceTranslation {
 				doc.load(filename);
 				for (auto element : doc.getKeys()) {
 					etk::String val = doc[element].toString().get();
-					m_translate.insert(make_pair(element, val));
+					m_translate.set(element, val);
 				}
 				filename = itMajor->second + "/" + m_languageDefault + ".json";
 				doc.load(filename);
 				for (auto element : doc.getKeys()) {
 					etk::String val = doc[element].toString().get();
-					auto itTrans = m_translate.find(element);
-					if (itTrans == m_translate.end()) {
-						m_translate.insert(make_pair(element, val));
-					}
+					m_translate.set(element, val);
 				}
 			}
 			// start parse language:
@@ -179,10 +173,7 @@ class LocalInstanceTranslation {
 				doc.load(filename);
 				for (auto element : doc.getKeys()) {
 					etk::String val = doc[element].toString().get();
-					auto itTrans = m_translate.find(element);
-					if (itTrans == m_translate.end()) {
-						m_translate.insert(make_pair(element, val));
-					}
+					m_translate.set(element, val);
 				}
 			}
 			// start parse default language:
@@ -198,10 +189,7 @@ class LocalInstanceTranslation {
 				doc.load(filename);
 				for (auto element : doc.getKeys()) {
 					etk::String val = doc[element].toString().get();
-					auto itTrans = m_translate.find(element);
-					if (itTrans == m_translate.end()) {
-						m_translate.insert(make_pair(element, val));
-					}
+					m_translate.set(element, val);
 				}
 			}
 		}
@@ -297,12 +285,12 @@ void etranslate::autoDetectLanguage() {
 	etk::String userLocalName;
 	etk::String globalLocalName;
 	try {
-		nonameLocalName = std::locale(std::locale(), new std::ctype<char>).name();
-		userLocalName = std::locale("").name();
-		globalLocalName = std::locale().name();
-		ETRANSLATE_VERBOSE("    The default locale is '" << globalLocalName << "'");
-		ETRANSLATE_VERBOSE("    The user's locale is '" << userLocalName << "'");
-		ETRANSLATE_VERBOSE("    A nameless locale is '" << nonameLocalName << "'");
+		nonameLocalName = setlocale(LC_ALL, "");
+		userLocalName = setlocale(LC_MESSAGES, "");
+		globalLocalName = setlocale(LC_CTYPE, "");
+		ETRANSLATE_ERROR("    The default locale is '" << globalLocalName << "'");
+		ETRANSLATE_ERROR("    The user's locale is '" << userLocalName << "'");
+		ETRANSLATE_ERROR("    A nameless locale is '" << nonameLocalName << "'");
 	} catch (std::runtime_error e) {
 		ETRANSLATE_ERROR("Can not get Locals ==> set English ...");
 		nonameLocalName = "EN";
