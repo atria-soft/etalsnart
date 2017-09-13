@@ -291,7 +291,7 @@ void etranslate::autoDetectLanguage() {
 		ETRANSLATE_ERROR("    The default locale is '" << globalLocalName << "'");
 		ETRANSLATE_ERROR("    The user's locale is '" << userLocalName << "'");
 		ETRANSLATE_ERROR("    A nameless locale is '" << nonameLocalName << "'");
-	} catch (std::runtime_error e) {
+	} catch (int e) { // TODO: Do it better etk::RuntimeError e) {
 		ETRANSLATE_ERROR("Can not get Locals ==> set English ...");
 		nonameLocalName = "EN";
 		userLocalName = "EN";
