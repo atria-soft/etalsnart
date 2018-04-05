@@ -312,7 +312,7 @@ void etranslate::autoDetectLanguage() {
 		lang = "EN";
 	}
 	lang = etk::String(lang.begin(), lang.begin()+2);
-	lang = etk::toupper(lang);
+	lang = etk::toUpper(lang);
 	ETRANSLATE_INFO("Select Language : '" << lang << "'");
 	getInstanceTranslation().setLanguage(lang);
 	return;
@@ -325,7 +325,7 @@ void etranslate::autoDetectLanguage() {
 			etk::String lang;
 			lang += s[0];
 			lang += s[1];
-			lang = etk::toupper(lang);
+			lang = etk::toUpper(lang);
 			getInstanceTranslation().setLanguage(lang);
 		}
 	#else
