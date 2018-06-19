@@ -319,7 +319,7 @@ void etranslate::autoDetectLanguage() {
 	// dead code ...
 	#if defined(__TARGET_OS__Linux)
 		char *s = getenv("LANG");
-		if (s == nullptr || strlen(s) < 2) {
+		if (s == null || strlen(s) < 2) {
 			ETRANSLATE_INFO("Try to determine system language FAIL ...");
 		} else {
 			etk::String lang;
