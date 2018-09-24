@@ -6,6 +6,7 @@
 #pragma once
 
 #include <etk/types.hpp>
+#include <etk/uri/uri.hpp>
 
 /**
  * @brief This is a simple interface to converte application display string in a generic current system language
@@ -36,16 +37,16 @@ namespace etranslate {
 	/**
 	 * @brief Set the path folder of the translation files
 	 * @param[in] _lib Library name that the path depend
-	 * @param[in] _path ETK generic path (DATA:... or /xxx)
+	 * @param[in] _uri ETK generic uri (DATA:... or /xxx)
 	 * @param[in] _major This path is the major path (The last loaded, the one which overload all)
 	 */
-	void addPath(const etk::String& _lib, const etk::String& _path, bool _major = false);
+	void addPath(const etk::String& _lib, const etk::Uri& _uri, bool _major = false);
 	/**
 	 * @brief Get the current paths of the library
 	 * @param[in] _lib Library name that the path depend
-	 * @return Path name.
+	 * @return Uri value.
 	 */
-	const etk::String& getPaths(const etk::String& _lib);
+	const etk::Uri& getPaths(const etk::String& _lib);
 	/**
 	 * @brief Set the default language to load data (the default language might contain all internal data for the basic application)
 	 * @param[in] _lang Language to load : ("EN" for english, "FR" for french, "DE" for German, "SP" for spanish ...)

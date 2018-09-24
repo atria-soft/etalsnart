@@ -7,14 +7,13 @@
 #include <etranslate/debug.hpp>
 #include <etranslate/etranslate.hpp>
 #include <etk/Map.hpp>
-#include <etk/os/FSNode.hpp>
 #include <ejson/ejson.hpp>
 #include <locale.h>
 
 
 class LocalInstanceTranslation {
 	private:
-		etk::Map<etk::String,etk::String> m_listPath;
+		etk::Map<etk::String,etk::Uri> m_listPath;
 		etk::String m_major;
 		etk::String m_languageDefault;
 		etk::String m_language;
@@ -29,8 +28,8 @@ class LocalInstanceTranslation {
 			// nothing to do ...
 		}
 	public:
-		void addPath(const etk::String& _lib, const etk::String& _path, bool _major) {
-			m_listPath.set(_lib, _path);
+		void addPath(const etk::String& _lib, const etk::Uri& _uri, bool _major) {
+			m_listPath.set(_lib, _uri);
 			if (_major == true) {
 				m_major = _lib;
 				ETRANSLATE_INFO("Change major translation : '" << m_major << "'");
@@ -39,10 +38,10 @@ class LocalInstanceTranslation {
 			m_translate.clear();
 		};
 		
-		const etk::String& getPaths(const etk::String& _lib) {
+		const etk::Uri& getPaths(const etk::String& _lib) {
 			auto it = m_listPath.find(_lib);
 			if (it == m_listPath.end()) {
-				static const etk::String g_error("");
+				static const etk::Uri g_error("");
 				return g_error;
 			}
 			return it->second;
@@ -146,15 +145,16 @@ class LocalInstanceTranslation {
 			// start parse language for Major:
 			auto itMajor = m_listPath.find(m_major);
 			if (itMajor != m_listPath.end()) {
-				etk::String filename(itMajor->second + "/" + m_language + ".json");
+				etk::Uri uri = itMajor->second;
+				uri.setPath(itMajor->second.getPath() / m_language + ".json");
 				ejson::Document doc;
-				doc.load(filename);
+				doc.load(uri);
 				for (auto element : doc.getKeys()) {
 					etk::String val = doc[element].toString().get();
 					m_translate.set(element, val);
 				}
-				filename = itMajor->second + "/" + m_languageDefault + ".json";
-				doc.load(filename);
+				uri.setPath(itMajor->second.getPath() / m_languageDefault + ".json");
+				doc.load(uri);
 				for (auto element : doc.getKeys()) {
 					etk::String val = doc[element].toString().get();
 					m_translate.set(element, val);
@@ -165,12 +165,13 @@ class LocalInstanceTranslation {
 				if (it.first == m_major) {
 					continue;
 				}
-				etk::String filename(it.second + "/" + m_languageDefault + ".json");
-				if (etk::FSNodeExist(filename) == false) {
+				etk::Uri uri = itMajor->second;
+				uri.setPath(itMajor->second.getPath() / m_languageDefault + ".json");
+				if (etk::uri::exist(uri) == false) {
 					continue;
 				}
 				ejson::Document doc;
-				doc.load(filename);
+				doc.load(uri);
 				for (auto element : doc.getKeys()) {
 					etk::String val = doc[element].toString().get();
 					m_translate.set(element, val);
@@ -181,12 +182,13 @@ class LocalInstanceTranslation {
 				if (it.first == m_major) {
 					continue;
 				}
-				etk::String filename(it.second + "/" + m_languageDefault + ".json");
-				if (etk::FSNodeExist(filename) == false) {
+				etk::Uri uri = itMajor->second;
+				uri.setPath(itMajor->second.getPath() / m_languageDefault + ".json");
+				if (etk::uri::exist(uri) == false) {
 					continue;
 				}
 				ejson::Document doc;
-				doc.load(filename);
+				doc.load(uri);
 				for (auto element : doc.getKeys()) {
 					etk::String val = doc[element].toString().get();
 					m_translate.set(element, val);
@@ -234,14 +236,14 @@ void etranslate::unInit() {
 	ETRANSLATE_ERROR("E-translate system un-init (already done before)");
 }
 
-void etranslate::addPath(const etk::String& _lib, const etk::String& _path, bool _major) {
+void etranslate::addPath(const etk::String& _lib, const etk::Uri& _uri, bool _major) {
 	if (g_isInit <= 0) {
 		ETRANSLATE_ERROR("E-translate system has not been init");
 	}
-	getInstanceTranslation().addPath(_lib, _path, _major);
+	getInstanceTranslation().addPath(_lib, _uri, _major);
 }
 
-const etk::String& etranslate::getPaths(const etk::String& _lib) {
+const etk::Uri& etranslate::getPaths(const etk::String& _lib) {
 	if (g_isInit <= 0) {
 		ETRANSLATE_ERROR("E-translate system has not been init");
 	}
