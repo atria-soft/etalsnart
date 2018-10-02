@@ -141,7 +141,8 @@ class LocalInstanceTranslation {
 			if (m_translateLoadad == true) {
 				return;
 			}
-			ETRANSLATE_VERBOSE("Load Translation MAJOR='" << m_major << "' LANG='" << m_language << "' default=" << m_languageDefault );
+			ETRANSLATE_DEBUG("Load Translation MAJOR='" << m_major << "' LANG='" << m_language << "' default=" << m_languageDefault );
+			ETRANSLATE_DEBUG("list path=" << m_listPath.getKeys() );
 			// start parse language for Major:
 			auto itMajor = m_listPath.find(m_major);
 			if (itMajor != m_listPath.end()) {
@@ -165,8 +166,8 @@ class LocalInstanceTranslation {
 				if (it.first == m_major) {
 					continue;
 				}
-				etk::Uri uri = itMajor->second;
-				uri.setPath(itMajor->second.getPath() / m_languageDefault + ".json");
+				etk::Uri uri = it.second;
+				uri.setPath(it.second.getPath() / m_languageDefault + ".json");
 				if (etk::uri::exist(uri) == false) {
 					continue;
 				}
@@ -182,8 +183,8 @@ class LocalInstanceTranslation {
 				if (it.first == m_major) {
 					continue;
 				}
-				etk::Uri uri = itMajor->second;
-				uri.setPath(itMajor->second.getPath() / m_languageDefault + ".json");
+				etk::Uri uri = it.second;
+				uri.setPath(it.second.getPath() / m_languageDefault + ".json");
 				if (etk::uri::exist(uri) == false) {
 					continue;
 				}
@@ -194,6 +195,7 @@ class LocalInstanceTranslation {
 					m_translate.set(element, val);
 				}
 			}
+			m_translateLoadad = true;
 		}
 		
 };
